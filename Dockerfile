@@ -4,14 +4,14 @@ FROM quay.io/astronomer/astro-runtime:11.3.0
 ENV PIP_USER=false
 
 #python venv setup
-RUN python3 -m venv /opt/airflow/venv1
+RUN sudo python3 -m venv /opt/airflow/venv1
 
 # Install dependencies:
 COPY requirements.txt .
 
 # --user   <--- WRONG, this is what ENV PIP_USER=false turns off
 #RUN /opt/airflow/venv1/bin/pip install --user -r requirements.txt  <---this is all wrong
-RUN /opt/airflow/venv1/bin/pip install -r requirements.txt
+RUN sudo /opt/airflow/venv1/bin/pip install -r requirements.txt
 ENV PIP_USER=true
 
 
