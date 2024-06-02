@@ -1,0 +1,21 @@
+sources:
+- database: auciello-design
+  name: sources
+  schema: novadrive
+  description: Base de dados proveninete da Extração do Postgres para o Bigquery.
+  tables:
+  - identifier: cidades
+    name: cidades
+  - identifier: clientes
+    name: clientes
+  - identifier: concessionarias
+    name: concessionarias
+  - identifier: estados
+    name: estados
+  - identifier: veiculos
+    name: veiculos
+  - identifier: vendas
+    name: vendas
+  - identifier: vendedores
+    name: vendedores
+version: 2
