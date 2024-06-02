@@ -14,6 +14,7 @@ from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
 
 from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
 from airflow.operators.empty import EmptyOperator
+from airflow.models import Variable
 
 import pandas as pd
 import pandas_gbq
@@ -46,6 +47,12 @@ def postgres_to_bigquery_etl():
     dataset = 'novadrive'
     table_names = ['veiculos', 'estados', 'cidades', 'concessionarias', 'vendedores', 'clientes', 'vendas']
     CREDENTIALS = service_account.Credentials.from_service_account_file('/opt/airflow/config/auciello-design.json')
+
+    credentials_json = Variable.get(
+        "gcp_keyfile_json", deserialize_json=True, default_var=None
+    )
+    # service_account_info = json.load(open('service_account.json'))
+    CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_json)
 
     postgres_source_task = EmptyOperator(task_id="postgres_source")
     bigquery_raw_task = EmptyOperator(task_id="bigquery_raw")
