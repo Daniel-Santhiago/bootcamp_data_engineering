@@ -16,7 +16,6 @@ jobs:
       uses: easingthemes/ssh-deploy@main
       env:
         SSH_PRIVATE_KEY: ${{secrets.EC2_SSH_KEY}}
-        ARGS: "-rltgoDzvO --delete"
         SOURCE: "./"
         REMOTE_HOST: "ec2-54-175-254-87.compute-1.amazonaws.com"
         REMOTE_USER: "ubuntu"
