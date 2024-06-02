@@ -25,7 +25,7 @@ import decimal
 default_args = {
     'owner': 'daniel',
     'depends_on_past': False,
-    'start_date': datetime(2024, 1, 1),
+    'start_date': datetime(2024, 2, 1),
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 0,
