@@ -21,4 +21,3 @@ jobs:
         REMOTE_HOST: "ec2-54-175-254-87.compute-1.amazonaws.com"
         REMOTE_USER: "ubuntu"
         TARGET: "/home/ubuntu"
-        EXCLUDE: "/dist/, /node_modules/, **.env, rebuild_app.sh, watcher.sh, /personal, /config/auciello-design.json"
