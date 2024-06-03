@@ -19,11 +19,11 @@ import os
 DBT_CONFIG = ProfileConfig(
     profile_name='novadrive',
     target_name='dev',
-    profiles_yml_filepath=Path('/usr/local/airflow/dags/dbt/novadrive/profiles.yml')
+    profiles_yml_filepath=Path('/opt/airflow/dags/dbt/novadrive/profiles.yml')
 )
 
 DBT_PROJECT_CONFIG = ProjectConfig(
-    dbt_project_path='/usr/local/airflow/dags/dbt/novadrive',
+    dbt_project_path='/opt/airflow/dags/dbt/novadrive',
 )
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")

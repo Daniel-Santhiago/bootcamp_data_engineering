@@ -11,7 +11,7 @@ RUN apt-get update \
 USER airflow
 # Install dependencies:
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 
 # Compulsory to switch parameter
