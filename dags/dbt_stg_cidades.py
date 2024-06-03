@@ -22,6 +22,7 @@ DBT_CONFIG = ProfileConfig(
     profiles_yml_filepath=Path('/opt/airflow/dags/dbt/novadrive/profiles.yml')
 )
 
+
 DBT_PROJECT_CONFIG = ProjectConfig(
     dbt_project_path='/opt/airflow/dags/dbt/novadrive',
 )
