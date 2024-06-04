@@ -15,11 +15,14 @@ from cosmos.config import ProfileConfig, ProjectConfig, RenderConfig
 from cosmos.constants import LoadMode, TestBehavior
 
 
+from cosmos import ExecutionConfig, ExecutionMode
+
 from airflow.models.baseoperator import chain
 
 from pathlib import Path
 import os
 
+EXECUTION_CONFIG = ExecutionConfig(execution_mode=ExecutionMode.LOCAL)
 
 DBT_CONFIG = ProfileConfig(
     profile_name='novadrive',
@@ -30,6 +33,7 @@ DBT_CONFIG = ProfileConfig(
 
 DBT_PROJECT_CONFIG = ProjectConfig(
     dbt_project_path='/opt/airflow/dags/dbt/novadrive',
+    manifest_path='/opt/airflow/dags/dbt/novadrive/target/manifest.json',
 )
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
@@ -41,6 +45,7 @@ DAG_ID = os.path.basename(__file__).replace(".py", "")
     start_date=datetime(2023,1,1),
     schedule=None,
     catchup=False,
+    concurrency=5,
     default_view='graph',
     tags=['dbt','novadrive'],
     doc_md=__doc__
@@ -51,9 +56,11 @@ def dbt_transformations():
         group_id='stage',
         project_config=DBT_PROJECT_CONFIG,
         profile_config=DBT_CONFIG,
+        execution_config=EXECUTION_CONFIG,
         render_config=RenderConfig(
             load_method=LoadMode.DBT_LS,
-            select=['+analyses+'],
+            dbt_deps=False,
+            select=['stage'],
             test_behavior=TestBehavior.AFTER_EACH,
         )
     )
