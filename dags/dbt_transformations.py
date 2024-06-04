@@ -10,10 +10,15 @@ from airflow import DAG
 from airflow.decorators import dag, task
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
+
+from airflow.utils.context import Context
+from airflow.utils.task_group import TaskGroup
+
 from cosmos.airflow.task_group import DbtTaskGroup
 from cosmos.config import ProfileConfig, ProjectConfig, RenderConfig
 from cosmos.constants import LoadMode, TestBehavior
-
+from cosmos.dbt.graph import DbtNode
+from cosmos.operators.local import DbtRunLocalOperator, DbtSnapshotLocalOperator
 
 from cosmos import ExecutionConfig, ExecutionMode
 
@@ -23,6 +28,8 @@ from pathlib import Path
 import os
 
 EXECUTION_CONFIG = ExecutionConfig(execution_mode=ExecutionMode.LOCAL)
+
+DBT_PROJECT_DIR = '/opt/airflow/dags/dbt/novadrive'
 
 DBT_CONFIG = ProfileConfig(
     profile_name='novadrive',
@@ -37,6 +44,51 @@ DBT_PROJECT_CONFIG = ProjectConfig(
 )
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
+
+class DbtSourceColoredOperator(EmptyOperator):
+    ui_color = "#5FB825"
+    ui_fgcolor = "white"
+
+class DbtModelColoredOperator(DbtRunLocalOperator):
+    ui_color = "#0094B3"
+    ui_fgcolor = "#FFFFFF"
+
+class DbtSnapshotColoredOperator(DbtSnapshotLocalOperator):
+    ui_color = "#88447D"
+    ui_fgcolor = "#FFFFFF"
+
+
+def convert_source(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
+    """
+    Return an instance of a desired operator to represent a dbt "source" node.
+    """
+    return DbtSourceColoredOperator(dag=dag, task_group=task_group, task_id=f"{node.name}_source")
+
+
+# Cosmos will use this function to generate an empty task when it finds a exposure node, in the manifest.
+def convert_exposure(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
+    """
+    Return an instance of a desired operator to represent a dbt "exposure" node.
+    """
+    return EmptyOperator(dag=dag, task_group=task_group, task_id=f"{node.name}_exposure")
+
+
+def convert_model(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
+    """
+    Return an instance of a desired operator to represent a dbt "model" node.
+    """
+    return DbtModelColoredOperator(dag=dag, task_group=task_group, task_id=f"{node.name}", 
+                                   profile_config=DBT_CONFIG, project_dir=DBT_PROJECT_DIR)
+
+
+def convert_snapshot(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
+    """
+    Return an instance of a desired operator to represent a dbt "snapshot" node.
+    """
+    return DbtSnapshotColoredOperator(dag=dag, task_group=task_group, task_id=f"{node.name}", 
+                                   profile_config=DBT_CONFIG, project_dir=DBT_PROJECT_DIR)
+
+
 
 
 @dag(
