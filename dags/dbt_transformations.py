@@ -33,7 +33,7 @@ DBT_CONFIG = ProfileConfig(
 
 DBT_PROJECT_CONFIG = ProjectConfig(
     dbt_project_path='/opt/airflow/dags/dbt/novadrive',
-    manifest_path='/opt/airflow/dags/dbt/novadrive/target/manifest.json',
+    # manifest_path='/opt/airflow/dags/dbt/novadrive/target/manifest.json',
 )
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
