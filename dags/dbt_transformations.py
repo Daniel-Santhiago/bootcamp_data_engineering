@@ -34,16 +34,17 @@ DBT_PROJECT_DIR = '/opt/airflow/dags/dbt/novadrive'
 DBT_CONFIG = ProfileConfig(
     profile_name='novadrive',
     target_name='dev',
-    profiles_yml_filepath=Path('/opt/airflow/dags/dbt/novadrive/profiles.yml')
+    profiles_yml_filepath=Path(f'{DBT_PROJECT_DIR}/profiles.yml')
 )
 
 
 DBT_PROJECT_CONFIG = ProjectConfig(
-    dbt_project_path='/opt/airflow/dags/dbt/novadrive',
+    dbt_project_path=DBT_PROJECT_DIR,
     # manifest_path='/opt/airflow/dags/dbt/novadrive/target/manifest.json',
 )
 
 DAG_ID = os.path.basename(__file__).replace(".py", "")
+
 
 class DbtSourceColoredOperator(EmptyOperator):
     ui_color = "#5FB825"
@@ -77,16 +78,24 @@ def convert_model(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
     """
     Return an instance of a desired operator to represent a dbt "model" node.
     """
-    return DbtModelColoredOperator(dag=dag, task_group=task_group, task_id=f"{node.name}", 
-                                   profile_config=DBT_CONFIG, project_dir=DBT_PROJECT_DIR)
+    return DbtModelColoredOperator(dag=dag, 
+                                   task_group=task_group, 
+                                   task_id=f"{node.name}", 
+                                   profile_config=DBT_CONFIG, 
+                                   project_dir=DBT_PROJECT_DIR,
+                                   select=[f"{node.name}"])
 
 
 def convert_snapshot(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
     """
     Return an instance of a desired operator to represent a dbt "snapshot" node.
     """
-    return DbtSnapshotColoredOperator(dag=dag, task_group=task_group, task_id=f"{node.name}", 
-                                   profile_config=DBT_CONFIG, project_dir=DBT_PROJECT_DIR)
+    return DbtSnapshotColoredOperator(dag=dag, 
+                                      task_group=task_group, 
+                                      task_id=f"{node.name}", 
+                                      profile_config=DBT_CONFIG, 
+                                      project_dir=DBT_PROJECT_DIR,
+                                      select=[f"{node.name}"])
 
 
 
@@ -112,8 +121,8 @@ def dbt_transformations():
         render_config=RenderConfig(
             load_method=LoadMode.DBT_LS,
             dbt_deps=False,
-            select=['stage'],
-            test_behavior=TestBehavior.AFTER_EACH,
+            select=['+stage'],
+            # test_behavior=TestBehavior.AFTER_EACH,
             node_converters={
                 DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
                 DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
@@ -132,7 +141,7 @@ def dbt_transformations():
             load_method=LoadMode.DBT_LS,
             dbt_deps=False,
             select=['dimensions'],
-            test_behavior=TestBehavior.AFTER_EACH,
+            # test_behavior=TestBehavior.AFTER_EACH,
             node_converters={
                 DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
                 DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
