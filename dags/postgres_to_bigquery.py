@@ -10,17 +10,13 @@
 from datetime import datetime, timedelta
 from airflow.decorators import dag, task
 from airflow.providers.postgres.hooks.postgres import PostgresHook
-from airflow.providers.snowflake.hooks.snowflake import SnowflakeHook
-
-from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
+from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook # Não consegui utilizar
 from airflow.operators.empty import EmptyOperator
 from airflow.models import Variable
 
 import pandas as pd
 import pandas_gbq
 from google.oauth2 import service_account
-from google.cloud import bigquery
-import decimal
 
  
 default_args = {
@@ -36,7 +32,7 @@ default_args = {
 @dag(
     dag_id='postgres_to_bigquery',
     default_args=default_args,
-    description='Load data incrementally from Postgres to Snowflake',
+    description='Load data incrementally from Postgres to Bigquery',
     schedule_interval=timedelta(days=1),
     catchup=False,
     doc_md=__doc__
@@ -46,12 +42,7 @@ def postgres_to_bigquery_etl():
     project_id = 'auciello-design'
     dataset = 'novadrive'
     table_names = ['veiculos', 'estados', 'cidades', 'concessionarias', 'vendedores', 'clientes', 'vendas']
-    CREDENTIALS = service_account.Credentials.from_service_account_file('/opt/airflow/config/auciello-design.json')
-
-    credentials_json = Variable.get(
-        "gcp_keyfile_json", deserialize_json=True, default_var=None
-    )
-    # service_account_info = json.load(open('service_account.json'))
+    credentials_json = Variable.get("gcp_keyfile_json", deserialize_json=True, default_var=None)
     CREDENTIALS = service_account.Credentials.from_service_account_info(credentials_json)
 
     postgres_source_task = EmptyOperator(task_id="postgres_source")
