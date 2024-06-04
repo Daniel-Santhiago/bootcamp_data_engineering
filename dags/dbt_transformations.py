@@ -16,7 +16,7 @@ from airflow.utils.task_group import TaskGroup
 
 from cosmos.airflow.task_group import DbtTaskGroup
 from cosmos.config import ProfileConfig, ProjectConfig, RenderConfig
-from cosmos.constants import LoadMode, TestBehavior
+from cosmos.constants import LoadMode, TestBehavior, DbtResourceType
 from cosmos.dbt.graph import DbtNode
 from cosmos.operators.local import DbtRunLocalOperator, DbtSnapshotLocalOperator
 
@@ -114,6 +114,12 @@ def dbt_transformations():
             dbt_deps=False,
             select=['stage'],
             test_behavior=TestBehavior.AFTER_EACH,
+            node_converters={
+                DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
+                DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
+                DbtResourceType("model"): convert_model,  
+                DbtResourceType("snapshot"): convert_snapshot,
+            }
         )
     )
 
@@ -127,6 +133,12 @@ def dbt_transformations():
             dbt_deps=False,
             select=['dimensions'],
             test_behavior=TestBehavior.AFTER_EACH,
+            node_converters={
+                DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
+                DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
+                DbtResourceType("model"): convert_model,  
+                DbtResourceType("snapshot"): convert_snapshot,
+            }
         )
     )
 
