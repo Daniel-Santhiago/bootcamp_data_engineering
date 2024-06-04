@@ -45,7 +45,7 @@ DAG_ID = os.path.basename(__file__).replace(".py", "")
     start_date=datetime(2023,1,1),
     schedule=None,
     catchup=False,
-    concurrency=5,
+    concurrency=7,
     default_view='graph',
     tags=['dbt','novadrive'],
     doc_md=__doc__
@@ -73,7 +73,7 @@ def dbt_transformations():
         render_config=RenderConfig(
             load_method=LoadMode.DBT_LS,
             dbt_deps=False,
-            select=['dim'],
+            select=['dimensions'],
             test_behavior=TestBehavior.AFTER_EACH,
         )
     )
