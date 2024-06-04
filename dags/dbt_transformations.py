@@ -52,7 +52,7 @@ DAG_ID = os.path.basename(__file__).replace(".py", "")
 )
 def dbt_transformations():  
 
-    dbt_task = DbtTaskGroup(
+    dbt_stage_task = DbtTaskGroup(
         group_id='stage',
         project_config=DBT_PROJECT_CONFIG,
         profile_config=DBT_CONFIG,
@@ -65,11 +65,25 @@ def dbt_transformations():
         )
     )
 
+    dbt_dim_task = DbtTaskGroup(
+        group_id='dim',
+        project_config=DBT_PROJECT_CONFIG,
+        profile_config=DBT_CONFIG,
+        execution_config=EXECUTION_CONFIG,
+        render_config=RenderConfig(
+            load_method=LoadMode.DBT_LS,
+            dbt_deps=False,
+            select=['dim'],
+            test_behavior=TestBehavior.AFTER_EACH,
+        )
+    )
+
     # finish = EmptyOperator(task_id='finish')
 
 
     chain(
-        dbt_task
+        dbt_stage_task,
+        dbt_dim_task
     )
 
 dbt_transformations()
