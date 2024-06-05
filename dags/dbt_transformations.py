@@ -134,6 +134,7 @@ def dbt_transformations():
         )
     )
 
+
     dbt_dim_task = DbtTaskGroup(
         group_id='dim',
         project_config=DBT_PROJECT_CONFIG,
