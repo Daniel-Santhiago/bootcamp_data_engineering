@@ -1,7 +1,7 @@
 # FROM quay.io/astronomer/astro-runtime:11.3.0
 # FROM quay.io/astronomer/astro-runtime:11.4.0
 
-# FROM apache/airflow:2.9.1
+FROM apache/airflow:2.9.1
 # USER root
 # RUN apt-get update \
 #   && apt-get install -y --no-install-recommends \
@@ -14,14 +14,14 @@
 # COPY requirements.txt .
 # RUN pip install --no-cache-dir -r requirements.txt
 # USER root
-# COPY requirements.txt .
-# RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
-#     pip install --no-cache-dir -r requirements.txt && deactivate
-
-FROM quay.io/astronomer/astro-runtime:11.4.0
-
+COPY requirements.txt .
 RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
-    pip install --no-cache-dir astronomer-cosmos[dbt-bigquery] protobuf apache-airflow[postgres] apache-airflow-providers-slack==3.0.0 && deactivate
+    pip install --no-cache-dir -r requirements.txt && deactivate
+
+# FROM quay.io/astronomer/astro-runtime:11.4.0
+
+# RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
+#     pip install --no-cache-dir astronomer-cosmos[dbt-bigquery] protobuf apache-airflow[postgres] apache-airflow-providers-slack==3.0.0 && deactivate
 
 # Compulsory to switch parameter
 # ENV PIP_USER=false
