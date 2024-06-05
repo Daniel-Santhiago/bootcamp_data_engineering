@@ -1,6 +1,7 @@
 # FROM quay.io/astronomer/astro-runtime:11.3.0
+FROM quay.io/astronomer/astro-runtime:11.4.0
 
-FROM apache/airflow:2.9.1
+# FROM apache/airflow:2.9.1
 USER root
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -11,7 +12,13 @@ RUN apt-get update \
 USER airflow
 # Install dependencies:
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# RUN pip install --no-cache-dir -r requirements.txt
+
+
+RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
+    pip install --no-cache-dir -r requirements.txt && deactivate
+
+
 
 # Compulsory to switch parameter
 # ENV PIP_USER=false
