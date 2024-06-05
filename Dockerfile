@@ -15,8 +15,10 @@ FROM apache/airflow:2.9.1
 # RUN pip install --no-cache-dir -r requirements.txt
 # USER root
 COPY requirements.txt .
-RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
-    pip install --no-cache-dir -r requirements.txt && deactivate
+RUN pip install --no-cache-dir -r requirements.txt
+
+# RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
+#     pip install --no-cache-dir -r requirements.txt && deactivate
 
 # FROM quay.io/astronomer/astro-runtime:11.4.0
 
