@@ -9,11 +9,12 @@ FROM apache/airflow:2.9.1
 #   && apt-get autoremove -yqq --purge \
 #   && apt-get clean \
 #   && rm -rf /var/lib/apt/lists/*
-USER airflow
+# USER airflow
 # Install dependencies:
 COPY requirements.txt .
 # RUN pip install --no-cache-dir -r requirements.txt
-USER root
+# USER root
+# COPY requirements.txt .
 RUN python -m venv dbt_venv && source dbt_venv/bin/activate && \
     pip install --no-cache-dir -r requirements.txt && deactivate
 

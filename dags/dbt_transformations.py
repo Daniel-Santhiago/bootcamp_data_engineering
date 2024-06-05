@@ -29,7 +29,7 @@ import os
 
 # EXECUTION_CONFIG = ExecutionConfig(execution_mode=ExecutionMode.LOCAL)
 
-EXECUTION_CONFIG =ExecutionConfig(dbt_executable_path=f"{os.environ['AIRFLOW_HOME']}/dbt_venv/bin/dbt",)
+EXECUTION_CONFIG =ExecutionConfig(dbt_executable_path=f"/opt/airflow/dbt_venv/bin/dbt",)
 
 DBT_PROJECT_DIR = '/opt/airflow/dags/dbt/novadrive'
 
@@ -100,6 +100,13 @@ def convert_snapshot(dag: DAG, task_group: TaskGroup, node: DbtNode, **kwargs):
                                       select=[f"{node.name}"])
 
 
+DBT_NODE_CONVERTERS = {
+                DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
+                DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
+                DbtResourceType("model"): convert_model,  
+                DbtResourceType("snapshot"): convert_snapshot,
+            }
+
 
 
 @dag(
@@ -125,12 +132,7 @@ def dbt_transformations():
             dbt_deps=False,
             select=['+stage'],
             # test_behavior=TestBehavior.AFTER_EACH,
-            node_converters={
-                DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
-                DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
-                DbtResourceType("model"): convert_model,  
-                DbtResourceType("snapshot"): convert_snapshot,
-            }
+            node_converters=DBT_NODE_CONVERTERS
         )
     )
 
@@ -145,12 +147,7 @@ def dbt_transformations():
             dbt_deps=False,
             select=['dimensions'],
             # test_behavior=TestBehavior.AFTER_EACH,
-            node_converters={
-                DbtResourceType("source"): convert_source,  # known dbt node type to Cosmos (part of DbtResourceType)
-                DbtResourceType("exposure"): convert_exposure,  # dbt node type new to Cosmos (will be added to DbtResourceType)
-                DbtResourceType("model"): convert_model,  
-                DbtResourceType("snapshot"): convert_snapshot,
-            }
+            node_converters=DBT_NODE_CONVERTERS
         )
     )
 
