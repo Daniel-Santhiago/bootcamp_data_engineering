@@ -27,7 +27,9 @@ from airflow.models.baseoperator import chain
 from pathlib import Path
 import os
 
-EXECUTION_CONFIG = ExecutionConfig(execution_mode=ExecutionMode.LOCAL)
+# EXECUTION_CONFIG = ExecutionConfig(execution_mode=ExecutionMode.LOCAL)
+
+EXECUTION_CONFIG =ExecutionConfig(dbt_executable_path=f"{os.environ['AIRFLOW_HOME']}/dbt_venv/bin/dbt",)
 
 DBT_PROJECT_DIR = '/opt/airflow/dags/dbt/novadrive'
 
