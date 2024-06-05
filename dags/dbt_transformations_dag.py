@@ -112,73 +112,103 @@ DBT_NODE_CONVERTERS = {
 
 
 
-@dag(
-    dag_id=DAG_ID,
-    description=DAG_ID,
-    start_date=datetime(2023,1,1),
-    schedule=None,
-    catchup=False,
-    concurrency=7,
-    default_view='graph',
-    tags=['dbt','novadrive'],
-    doc_md=__doc__
-)
-def dbt_transformations():  
 
-
-
-    dbt_bigquery_dag = DbtDag(
+dbt_bigquery_dag = DbtDag(
+        dag_id=DAG_ID,
+        description=DAG_ID,
+        start_date=datetime(2023,1,1),
+        schedule=None,
+        catchup=False,
+        concurrency=7,
+        default_view='graph',
+        tags=['dbt','novadrive'],
+        doc_md=__doc__,
         project_config=DBT_PROJECT_CONFIG,
         operator_args={"install_deps": True},
         profile_config=DBT_CONFIG,
         execution_config=EXECUTION_CONFIG,
         schedule_interval="@daily",
-        start_date=datetime(2023, 9, 10),
         render_config=RenderConfig(
             load_method=LoadMode.DBT_LS,
             dbt_deps=False,
             select=['+stage'],
             # test_behavior=TestBehavior.AFTER_EACH,
             node_converters=DBT_NODE_CONVERTERS
-        ),
-        catchup=False 
+        )
     )
+
+
+# @dag(
+#     dag_id=DAG_ID,
+#     description=DAG_ID,
+#     start_date=datetime(2023,1,1),
+#     schedule=None,
+#     catchup=False,
+#     concurrency=7,
+#     default_view='graph',
+#     tags=['dbt','novadrive'],
+#     doc_md=__doc__
+# )
+# def dbt_transformations():  
+#     dbt_bigquery_dag = DbtDag(
+#         dag_id=DAG_ID,
+#         description=DAG_ID,
+#         start_date=datetime(2023,1,1),
+#         schedule=None,
+#         catchup=False,
+#         concurrency=7,
+#         default_view='graph',
+#         tags=['dbt','novadrive'],
+#         doc_md=__doc__,
+#         project_config=DBT_PROJECT_CONFIG,
+#         operator_args={"install_deps": True},
+#         profile_config=DBT_CONFIG,
+#         execution_config=EXECUTION_CONFIG,
+#         schedule_interval="@daily",
+#         render_config=RenderConfig(
+#             load_method=LoadMode.DBT_LS,
+#             dbt_deps=False,
+#             select=['+stage'],
+#             # test_behavior=TestBehavior.AFTER_EACH,
+#             node_converters=DBT_NODE_CONVERTERS
+#         )
+#     )
     
 
-    # dbt_stage_task = DbtTaskGroup(
-    #     group_id='stage',
-    #     project_config=DBT_PROJECT_CONFIG,
-    #     profile_config=DBT_CONFIG,
-    #     execution_config=EXECUTION_CONFIG,
-    #     render_config=RenderConfig(
-    #         load_method=LoadMode.DBT_LS,
-    #         dbt_deps=False,
-    #         select=['+stage'],
-    #         # test_behavior=TestBehavior.AFTER_EACH,
-    #         node_converters=DBT_NODE_CONVERTERS
-    #     )
-    # )
+#     # dbt_stage_task = DbtTaskGroup(
+#     #     group_id='stage',
+#     #     project_config=DBT_PROJECT_CONFIG,
+#     #     profile_config=DBT_CONFIG,
+#     #     execution_config=EXECUTION_CONFIG,
+#     #     render_config=RenderConfig(
+#     #         load_method=LoadMode.DBT_LS,
+#     #         dbt_deps=False,
+#     #         select=['+stage'],
+#     #         # test_behavior=TestBehavior.AFTER_EACH,
+#     #         node_converters=DBT_NODE_CONVERTERS
+#     #     )
+#     # )
 
 
-    # dbt_dim_task = DbtTaskGroup(
-    #     group_id='dim',
-    #     project_config=DBT_PROJECT_CONFIG,
-    #     profile_config=DBT_CONFIG,
-    #     execution_config=EXECUTION_CONFIG,
-    #     render_config=RenderConfig(
-    #         load_method=LoadMode.DBT_LS,
-    #         dbt_deps=False,
-    #         select=['dimensions'],
-    #         # test_behavior=TestBehavior.AFTER_EACH,
-    #         node_converters=DBT_NODE_CONVERTERS
-    #     )
-    # )
+#     # dbt_dim_task = DbtTaskGroup(
+#     #     group_id='dim',
+#     #     project_config=DBT_PROJECT_CONFIG,
+#     #     profile_config=DBT_CONFIG,
+#     #     execution_config=EXECUTION_CONFIG,
+#     #     render_config=RenderConfig(
+#     #         load_method=LoadMode.DBT_LS,
+#     #         dbt_deps=False,
+#     #         select=['dimensions'],
+#     #         # test_behavior=TestBehavior.AFTER_EACH,
+#     #         node_converters=DBT_NODE_CONVERTERS
+#     #     )
+#     # )
 
-    # finish = EmptyOperator(task_id='finish')
+#     # finish = EmptyOperator(task_id='finish')
 
 
-    chain(
-        dbt_bigquery_dag
-    )
+#     chain(
+#         dbt_bigquery_dag
+#     )
 
-dbt_transformations()
+# dbt_transformations()
